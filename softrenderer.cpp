@@ -3,13 +3,20 @@
 
 #include "framework.h"
 #include "softrenderer.h"
+#include "rendermachine.h"
+
+#include <iostream>
 
 #define MAX_LOADSTRING 100
+
+#define MOVE_STEP 10
 
 // 全局变量:
 HINSTANCE hInst;                                // 当前实例
 WCHAR szTitle[MAX_LOADSTRING];                  // 标题栏文本
 WCHAR szWindowClass[MAX_LOADSTRING];            // 主窗口类名
+
+RenderMachine* prm = new RenderMachine();
 
 // 此代码模块中包含的函数的前向声明:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
@@ -26,6 +33,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     UNREFERENCED_PARAMETER(lpCmdLine);
 
     // TODO: 在此处放置代码。
+    Vector2f v1(20, 100);
+    Vector2f v2(80, 70);
+    Vector2f v3(60, 20);
+    prm->AddTriangle(v1, v2, v3);
+
 
     // 初始化全局字符串
     LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
@@ -147,11 +159,38 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             PAINTSTRUCT ps;
             HDC hdc = BeginPaint(hWnd, &ps);
             // TODO: 在此处添加使用 hdc 的任何绘图代码...
+            RenderMachineDraw(hdc, prm);
+
             EndPaint(hWnd, &ps);
         }
         break;
     case WM_DESTROY:
         PostQuitMessage(0);
+        break;
+    case WM_KEYDOWN:
+        switch (wParam)
+        {
+        case VK_LEFT:
+            cout << "left arrow down" << endl;
+            prm->MoveTriangles(-MOVE_STEP, 0);
+            InvalidateRect(hWnd, NULL, true);
+            break;
+        case VK_RIGHT:
+            cout << "right arrow down" << endl;
+            prm->MoveTriangles(MOVE_STEP, 0);
+            InvalidateRect(hWnd, NULL, true);
+            break;
+        case VK_UP:
+            cout << "up arrow down" << endl;
+            prm->MoveTriangles(0, -MOVE_STEP);
+            InvalidateRect(hWnd, NULL, true);
+            break;
+        case VK_DOWN:
+            cout << "down arrow down" << endl;
+            prm->MoveTriangles(0, MOVE_STEP);
+            InvalidateRect(hWnd, NULL, true);
+            break;
+        }
         break;
     default:
         return DefWindowProc(hWnd, message, wParam, lParam);

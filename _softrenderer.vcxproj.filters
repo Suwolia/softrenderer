@@ -27,6 +27,12 @@
     <ClInclude Include="softrenderer.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="softgl.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="rendermachine.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="_softrenderer.rc">
@@ -43,6 +49,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="softrenderer.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="softgl.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="rendermachine.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
