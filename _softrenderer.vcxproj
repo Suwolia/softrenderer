@@ -157,6 +157,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="framework.h" />
+    <ClInclude Include="model.h" />
     <ClInclude Include="rendermachine.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="softgl.h" />
@@ -164,6 +165,7 @@
     <ClInclude Include="softrenderer.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="model.cpp" />
     <ClCompile Include="rendermachine.cpp" />
     <ClCompile Include="softgl.cpp" />
     <ClCompile Include="softrenderer.cpp" />

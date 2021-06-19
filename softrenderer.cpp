@@ -4,6 +4,7 @@
 #include "framework.h"
 #include "softrenderer.h"
 #include "rendermachine.h"
+#include "model.h"
 
 #include <iostream>
 
@@ -33,11 +34,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     UNREFERENCED_PARAMETER(lpCmdLine);
 
     // TODO: 在此处放置代码。
-    Vector2f v1(20, 100);
-    Vector2f v2(80, 70);
-    Vector2f v3(60, 20);
-    prm->AddTriangle(v1, v2, v3);
-
+    Model* model = new Model("obj/african_head.obj");
+    prm->AddModel(model);
 
     // 初始化全局字符串
     LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
@@ -156,11 +154,40 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         break;
     case WM_PAINT:
         {
+            // 与绘图有关的信息
             PAINTSTRUCT ps;
-            HDC hdc = BeginPaint(hWnd, &ps);
-            // TODO: 在此处添加使用 hdc 的任何绘图代码...
-            RenderMachineDraw(hdc, prm);
 
+            HDC old_hdc = BeginPaint(hWnd, &ps);
+            // TODO: 在此处添加使用 hdc 的任何绘图代码...
+
+            // 用于缓冲的内存DC
+            HDC hdc = CreateCompatibleDC(old_hdc);
+
+            // 窗口的宽高和绘制尺寸
+            RECT clientRect;
+            GetClientRect(hWnd, &clientRect);
+
+            // 创建内存兼容位图hBmp
+            HBITMAP hBmp = CreateCompatibleBitmap(old_hdc, clientRect.right, clientRect.bottom);
+
+            // 将内存位图选入缓冲内存DC中
+            SelectObject(hdc, hBmp);
+
+            // 这一步是为了讲黑色背景变成白色
+            // 设置刷子颜色
+            SelectObject(hdc, GetSysColorBrush(COLOR_3DFACE));
+            Rectangle(hdc, -1, -1, clientRect.right + 2, clientRect.bottom + 2);
+
+            prm->Draw(hdc);
+
+            // 将内存中的内容显示到窗口
+            BitBlt(old_hdc, 0, 0, clientRect.right, clientRect.bottom, hdc, 0, 0, SRCCOPY);
+
+            // 回收内存资源
+            DeleteObject(hBmp);
+            DeleteDC(hdc);
+
+            ReleaseDC(hWnd, hdc);
             EndPaint(hWnd, &ps);
         }
         break;
@@ -173,22 +200,22 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         case VK_LEFT:
             cout << "left arrow down" << endl;
             prm->MoveTriangles(-MOVE_STEP, 0);
-            InvalidateRect(hWnd, NULL, true);
+            InvalidateRect(hWnd, NULL, false);
             break;
         case VK_RIGHT:
             cout << "right arrow down" << endl;
             prm->MoveTriangles(MOVE_STEP, 0);
-            InvalidateRect(hWnd, NULL, true);
+            InvalidateRect(hWnd, NULL, false);
             break;
         case VK_UP:
             cout << "up arrow down" << endl;
             prm->MoveTriangles(0, -MOVE_STEP);
-            InvalidateRect(hWnd, NULL, true);
+            InvalidateRect(hWnd, NULL, false);
             break;
         case VK_DOWN:
             cout << "down arrow down" << endl;
             prm->MoveTriangles(0, MOVE_STEP);
-            InvalidateRect(hWnd, NULL, true);
+            InvalidateRect(hWnd, NULL, false);
             break;
         }
         break;
