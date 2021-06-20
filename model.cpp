@@ -6,7 +6,7 @@
 
 using namespace std;
 
-Model::Model(const char* filename)
+Model::Model(const char* filename):_scale(Vector3f(1, 1, 1))
 {
 	ifstream ifs;
 	ifs.open(filename, ios::in);
@@ -69,4 +69,34 @@ Model::Model(const char* filename)
 	cout << "Normal Vertics: " << _normvertics.size() << endl;
 	cout << "Face: " << _faceindex.size() << endl;
 	ifs.close();
+}
+
+
+void Model::SetPosition(float x, float y, float z)
+{
+	_position[0] = x;
+	_position[1] = y;
+	_position[2] = z;
+}
+
+
+void Model::SetScale(float x, float y, float z)
+{
+	_scale[0] = x;
+	_scale[1] = y;
+	_scale[2] = z;
+}
+
+
+Matrix<float, 4, 4> Model::GetModelMatrix()
+{
+	Matrix<float, 4, 4> _mat;
+	_mat.setIdentity();
+	_mat.row(0)[0] = _scale[0];
+	_mat.row(1)[1] = _scale[1];
+	_mat.row(2)[2] = _scale[2];
+	_mat.row(0)[3] = _position[0];
+	_mat.row(1)[3] = _position[1];
+	_mat.row(2)[3] = _position[2];
+	return _mat;
 }

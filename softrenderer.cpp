@@ -18,6 +18,13 @@ WCHAR szTitle[MAX_LOADSTRING];                  // 标题栏文本
 WCHAR szWindowClass[MAX_LOADSTRING];            // 主窗口类名
 
 RenderMachine* prm = new RenderMachine();
+Vector3f camera_pos(0, 0, 3);
+Vector3f camera_up(0, 1, 0);
+Vector3f lookat_pos(0, 0, 0);
+float camera_near = 1.f;
+float camera_far = 3.f;
+float camera_ratio = 1.f;
+float camera_fov_angle = 60.;
 
 // 此代码模块中包含的函数的前向声明:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
@@ -35,7 +42,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
     // TODO: 在此处放置代码。
     Model* model = new Model("obj/african_head.obj");
+    cout << (model->GetModelMatrix()) << endl;
     prm->AddModel(model);
+    
+    prm->LookAt(camera_pos, lookat_pos, camera_up);
+    prm->SetupCamera(camera_near, camera_far, camera_ratio, camera_fov_angle);
 
     // 初始化全局字符串
     LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
@@ -178,6 +189,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             SelectObject(hdc, GetSysColorBrush(COLOR_3DFACE));
             Rectangle(hdc, -1, -1, clientRect.right + 2, clientRect.bottom + 2);
 
+            Vector2f x_range(0, clientRect.right);
+            Vector2f y_range(0, clientRect.bottom);
+            Vector2f z_range(0, 255);
+            prm->SetupViewport(x_range, y_range, z_range);
             prm->Draw(hdc);
 
             // 将内存中的内容显示到窗口
